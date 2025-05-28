@@ -1,0 +1,46 @@
+src/
+├── assets/          # Archivos estáticos (imágenes, fuentes, etc.)
+        ├── images/
+        │   ├── logo.png
+        │   └── banner.webp
+        └── fonts/
+            └── custom.woff2
+
+├── components/      # Componentes reutilizables (.astro, .jsx, .vue, etc.)
+        ├── ui/              # Componentes visuales (botones, cards)
+        │   ├── Button.astro
+        │   └── Card.jsx
+        └── shared/          # Lógica reutilizable
+            └── useFetchData.js
+
+├── content/         # Contenido en Markdown/MDX (posts, páginas, etc.)
+        ├── blog/            # Colección "blog"
+        │   ├── post1.md
+        │   └── post2.md
+        └── products/        # Colección "products"
+            └── product1.md
+
+├── layouts/         # Plantillas base para páginas
+        Propósito: Plantillas base para múltiples páginas.
+        Características:
+            Usan <slot /> para inyectar contenido.
+            Pueden incluir <head> global (SEO, fuentes, estilos).
+
+├── pages/           # Rutas de la aplicación (generadas automáticamente)
+        Propósito: Define las rutas de tu sitio.
+        Reglas clave:
+            index.astro → Ruta raíz (/).
+            about.astro → /about.
+            blog/[slug].astro → Rutas dinámicas (/blog/post-1).
+
+├── scripts/         # JS/Código del lado del cliente (opcional)
+        Propósito: Código JavaScript del lado del cliente.
+        Casos de uso:
+        Animaciones con GSAP.
+        Event listeners personalizados.
+
+├── styles/          # CSS/SCSS globales (opcional)
+        Propósito: Estilos globales o por componente.
+        
+└── utils/           # Funciones útiles (helpers, lógica compartida)
+        Propósito: Funciones compartidas entre componentes.
