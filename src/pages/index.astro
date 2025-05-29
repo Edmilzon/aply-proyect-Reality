@@ -5,24 +5,65 @@ import Login from '../components/ui/Login.astro';
 ---
 
 <MainLayout>
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900">
+    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 flex items-center justify-center">
         <div class="container mx-auto px-4 py-8">
-            <div class="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                    <h1 class="text-5xl font-bold text-emerald-400 mb-4">Bienvenido a LUNITA</h1>
-                    <p class="text-slate-300 text-lg mb-6">Sistema de gestión contable eficiente y fácil de usar.</p>
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 mb-6 animate-fade-in">
+                    Bienvenido a Aplicacion a Proyectos Reales
+                </h1>
+                
+                <p class="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+                    Sistema de gestion contable eficiente y facil de usar. 
+                    Calcula flujos de efectivo y analiza proyectos financieros.
+                </p>
+                
+                <div class="space-y-4 md:space-y-0 md:space-x-4">
+                    <a href="/financial" 
+                       class="inline-block px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-emerald-500/25">
+                        Ir a la Calculadora de Flujo de Efectivo
+                    </a>
                     
                     <a href="/contabilidad" 
-                       class="inline-block px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-emerald-500/25">
+                       class="inline-block px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-slate-500/25">
                         Ir a la Calculadora Contable
-                        <span class="ml-2">→</span>
                     </a>
                 </div>
-                
-                <div class="md:max-w-md mx-auto w-full">
-                    <Login />
+
+                <!-- Características principales -->
+                <div class="grid md:grid-cols-3 gap-6 mt-16">
+                    <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold text-white mb-2">Flujos Financieros</h3>
+                        <p class="text-slate-300">Calcula y analiza flujos de efectivo a 5 anios con indicadores financieros</p>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold text-white mb-2">Gestion Contable</h3>
+                        <p class="text-slate-300">Maneja tus calculos contables de manera eficiente y precisa</p>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl">
+                        <h3 class="text-lg font-semibold text-white mb-2">Analisis de Proyectos</h3>
+                        <p class="text-slate-300">Evalua la viabilidad de tus proyectos con TIR, VAN y mas</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </MainLayout>
+
+<style>
+    .animate-fade-in {
+        animation: fadeIn 1s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
