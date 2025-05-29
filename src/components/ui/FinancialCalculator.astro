@@ -160,37 +160,37 @@ const rows = [
 </div>
 
 <script>
-    import { initializeFinancialCalculator } from '../../scripts/financial/calculatorLogic.js';
+    import { inicializarCalculadoraFinanciera } from '../../scripts/financial/calculatorLogic.js';
     document.addEventListener('DOMContentLoaded', () => {
-        initializeFinancialCalculator();
+        inicializarCalculadoraFinanciera();
         
         // Manejar cambio de año en móvil
-        const yearSelector = document.getElementById('yearSelectorMobile');
-        if (yearSelector) {
-            yearSelector.addEventListener('change', (e) => {
-                updateMobileView(parseInt(e.target.value));
+        const selectorAnio = document.getElementById('yearSelectorMobile');
+        if (selectorAnio) {
+            selectorAnio.addEventListener('change', (e) => {
+                actualizarVistaMovil(parseInt(e.target.value));
             });
         }
     });
 
-    function updateMobileView(selectedYear) {
-        rows.forEach(row => {
-            const mobileElement = document.getElementById(`mobile-${row.id}`);
-            const desktopElement = document.getElementById(`${row.id}-${selectedYear}`);
+    function actualizarVistaMovil(anioSeleccionado) {
+        rows.forEach(fila => {
+            const elementoMovil = document.getElementById(`mobile-${fila.id}`);
+            const elementoEscritorio = document.getElementById(`${fila.id}-${anioSeleccionado}`);
             
-            if (mobileElement && desktopElement) {
-                if (row.type === 'input') {
-                    mobileElement.value = desktopElement.value;
+            if (elementoMovil && elementoEscritorio) {
+                if (fila.type === 'input') {
+                    elementoMovil.value = elementoEscritorio.value;
                 } else {
-                    mobileElement.textContent = desktopElement.textContent;
+                    elementoMovil.textContent = elementoEscritorio.textContent;
                 }
             }
         });
 
-        const mobileNetFlow = document.getElementById('mobile-netFlow');
-        const desktopNetFlow = document.getElementById(`netFlow-${selectedYear}`);
-        if (mobileNetFlow && desktopNetFlow) {
-            mobileNetFlow.textContent = desktopNetFlow.textContent;
+        const flujoNetoMovil = document.getElementById('mobile-netFlow');
+        const flujoNetoEscritorio = document.getElementById(`netFlow-${anioSeleccionado}`);
+        if (flujoNetoMovil && flujoNetoEscritorio) {
+            flujoNetoMovil.textContent = flujoNetoEscritorio.textContent;
         }
     }
 </script> 

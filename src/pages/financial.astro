@@ -1,6 +1,6 @@
 ---
 import MainLayout from '../layouts/main.astro';
-import FinancialCalculator from '../components/ui/FinancialCalculator.astro';
+import CalculadoraFinanciera from '../components/ui/FinancialCalculator.astro';
 ---
 
 <MainLayout>
@@ -11,7 +11,7 @@ import FinancialCalculator from '../components/ui/FinancialCalculator.astro';
         </div>
 
         <div class="grid gap-6">
-            <FinancialCalculator />
+            <CalculadoraFinanciera />
             
             <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-slate-700/50">
                 <h2 class="text-xl font-semibold text-emerald-400 mb-4">Instrucciones de Uso</h2>
@@ -19,7 +19,7 @@ import FinancialCalculator from '../components/ui/FinancialCalculator.astro';
                     <li>Ingresa los datos base: cantidad y precio de venta</li>
                     <li>Los impuestos (IVA, IT, IUE) se calculan automaticamente</li>
                     <li>Ingresa los costos variables y fijos</li>
-                    <li>Aniade informacion sobre depreciacion y activos fijos</li>
+                    <li>Aniade informacion sobre depreciacion y activos fijos</li>  
                     <li>Completa la informacion de capital de trabajo y financiamiento</li>
                     <li>Los indicadores financieros (TIR, VAN, TMAR) se actualizan automaticamente</li>
                 </ul>
