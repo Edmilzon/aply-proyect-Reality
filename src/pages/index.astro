@@ -1,25 +1,28 @@
 ---
 import '../styles/global.css';
-// Component Imports
-
-
 import MainLayout from '../layouts/main.astro';
+import Login from '../components/ui/Login.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
-
-	<body>
-
-		<MainLayout>
-			<h1>Bien venido al sitio</h1>
-			<p>Este es un ejemplo</p>
-		</MainLayout>
-	</body>
-</html>
+<MainLayout>
+    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h1 class="text-5xl font-bold text-emerald-400 mb-4">Bienvenido a LUNITA</h1>
+                    <p class="text-slate-300 text-lg mb-6">Sistema de gestión contable eficiente y fácil de usar.</p>
+                    
+                    <a href="/contabilidad" 
+                       class="inline-block px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-emerald-500/25">
+                        Ir a la Calculadora Contable
+                        <span class="ml-2">→</span>
+                    </a>
+                </div>
+                
+                <div class="md:max-w-md mx-auto w-full">
+                    <Login />
+                </div>
+            </div>
+        </div>
+    </div>
+</MainLayout>

@@ -1,0 +1,29 @@
+---
+import MainLayout from '../layouts/main.astro';
+import FinancialCalculator from '../components/ui/FinancialCalculator.astro';
+---
+
+<MainLayout>
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">Calculadora de Flujo de Efectivo</h1>
+            <p class="text-slate-300">Analiza y proyecta tus flujos financieros a 5 años.</p>
+        </div>
+
+        <div class="grid gap-6">
+            <FinancialCalculator />
+            
+            <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-slate-700/50">
+                <h2 class="text-xl font-semibold text-emerald-400 mb-4">Instrucciones de Uso</h2>
+                <ul class="space-y-2 text-slate-900">
+                    <li>Ingresa los datos base: cantidad y precio de venta</li>
+                    <li>Los impuestos (IVA, IT, IUE) se calculan automaticamente</li>
+                    <li>Ingresa los costos variables y fijos</li>
+                    <li>Aniade informacion sobre depreciacion y activos fijos</li>
+                    <li>Completa la informacion de capital de trabajo y financiamiento</li>
+                    <li>Los indicadores financieros (TIR, VAN, TMAR) se actualizan automaticamente</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</MainLayout> 

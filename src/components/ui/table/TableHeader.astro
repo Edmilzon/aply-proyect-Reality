@@ -1,0 +1,19 @@
+---
+const headers = [
+    'Fecha',
+    'Descripción',
+    'Referencia',
+    'Debe',
+    'Haber',
+    'Balance',
+    'Acciones'
+];
+---
+
+<thead class="bg-slate-800 text-white">
+    <tr>
+        {headers.map(header => (
+            <th class="px-4 py-3 text-left font-semibold border-b border-slate-700">{header}</th>
+        ))}
+    </tr>
+</thead> 

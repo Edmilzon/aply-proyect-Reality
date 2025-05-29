@@ -1,0 +1,196 @@
+---
+const years = [0, 1, 2, 3, 4, 5];
+
+const rows = [
+    { id: 'quantity', label: 'Q (Cantidad)', type: 'input', class: 'text-slate-900' },
+    { id: 'price', label: 'PV (Precio venta)', type: 'input', class: 'text-slate-900' },
+    { id: 'operatingIncome', label: 'INGRESO OPERATIVO', type: 'calculated', class: 'text-emerald-600 font-medium bg-slate-800/30' },
+    { id: 'iva', label: '(-) IVA (13%)', type: 'calculated', class: 'text-red-600' },
+    { id: 'it', label: '(-) IT (3%)', type: 'calculated', class: 'text-red-600' },
+    { id: 'netIncome', label: 'INGRESO NETO', type: 'calculated', class: 'text-emerald-600 font-medium bg-slate-800/30' },
+    { id: 'unitVariable', label: 'Coste Variable Unitario', type: 'input', class: 'text-slate-900' },
+    { id: 'variableCosts', label: '(-)Costo variables', type: 'calculated', class: 'text-red-600' },
+    { id: 'fixedCosts', label: '(-) Costos fijos', type: 'input', class: 'text-red-600' },
+    { id: 'financialCosts', label: '(-) C.T. Financiero', type: 'input', class: 'text-red-600' },
+    { id: 'depreciation', label: '(-) Depreciación', type: 'input', class: 'text-red-600' },
+    { id: 'grossProfit', label: 'UTILIDAD BRUTA', type: 'calculated', class: 'text-emerald-600 font-medium bg-slate-800/30' },
+    { id: 'iue', label: '(-) IUE (25%)', type: 'calculated', class: 'text-red-600' },
+    { id: 'netProfit', label: 'UTILIDAD NETA', type: 'calculated', class: 'text-emerald-600 font-medium bg-slate-800/30' },
+    { id: 'fixedAssets', label: '(-)Inv. Activos Fijos', type: 'input', class: 'text-red-600' },
+    { id: 'assetDepreciation', label: '(+) Depreciación A.F', type: 'input', class: 'text-emerald-600' },
+    { id: 'residualValue', label: '(+) Valor Residual', type: 'input', class: 'text-emerald-600' },
+    { id: 'workingCapital', label: 'Capital de Trabajo (Kw)', type: 'input', class: 'text-slate-900' },
+    { id: 'capitalUtility', label: '(-)Kw Utilitario', type: 'input', class: 'text-red-600' },
+    { id: 'capitalRecovery', label: '(+) Recuperacion de Kw', type: 'input', class: 'text-emerald-600' },
+    { id: 'loan', label: '(+)Prestamo', type: 'input', class: 'text-emerald-600' },
+    { id: 'amortization', label: '(-) Amortizac. finc.', type: 'input', class: 'text-red-600' }
+];
+---
+
+<div class="w-full overflow-x-auto bg-white/10 backdrop-blur-md rounded-xl shadow-xl border border-slate-700/50 p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-emerald-600">Flujo de Efectivo Proyectado</h2>
+        
+        <!-- Selector de años para móvil -->
+        <div class="md:hidden flex items-center gap-4">
+            <select 
+                id="yearSelectorMobile" 
+                class="bg-slate-800 text-slate-900 px-4 py-2 rounded-lg border border-slate-600 focus:border-emerald-400 focus:outline-none"
+            >
+                {years.map(year => (
+                    <option value={year}>Año {year}</option>
+                ))}
+            </select>
+        </div>
+    </div>
+
+    <!-- Vista de escritorio - Tabla completa -->
+    <div class="hidden md:block overflow-x-auto">
+        <table class="w-full min-w-[1200px] table-fixed">
+            <thead class="bg-slate-800 text-slate-900 text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left w-1/4">ITEM</th>
+                    {years.map(year => (
+                        <th class="px-4 py-3 text-center">Anio {year}</th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {rows.map(row => (
+                    <tr class="border-b border-slate-700/50">
+                        <td class={`px-4 py-3 font-medium ${row.class}`}>{row.label}</td>
+                        {years.map(year => (
+                            <td class="px-4 py-2">
+                                {row.type === 'input' ? (
+                                    <input 
+                                        type="number" 
+                                        id={`${row.id}-${year}`}
+                                        class="w-full bg-transparent border border-slate-600 rounded px-2 py-1 text-slate-900 focus:border-emerald-400 focus:outline-none text-right"
+                                        value="0"
+                                    />
+                                ) : (
+                                    <div id={`${row.id}-${year}`} class={`${row.class} text-right`}>0.00</div>
+                                )}
+                            </td>
+                        ))}
+                    </tr>
+                ))}
+            </tbody>
+            <tfoot>
+                <tr class="bg-slate-800">
+                    <td class="px-4 py-3 text-slate-900 font-bold text-white">FLUJO DE EFECTIVO NETO</td>
+                    {years.map(year => (
+                        <td id={`netFlow-${year}`} class="px-4 py-3 text-emerald-600 font-bold text-right">0.00</td>
+                    ))}
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Vista móvil - Tabla por año -->
+    <div class="md:hidden">
+        <table class="w-full">
+            <thead class="bg-slate-800 text-slate-900">
+                <tr>
+                    <th class="px-4 py-3 text-left">ITEM</th>
+                    <th class="px-4 py-3 text-right">Valor</th>
+                </tr>
+            </thead>
+            <tbody id="mobileTableBody">
+                {rows.map(row => (
+                    <tr class="border-b border-slate-700/50">
+                        <td class={`px-4 py-3 font-medium ${row.class}`}>{row.label}</td>
+                        <td class="px-4 py-2">
+                            {row.type === 'input' ? (
+                                <input 
+                                    type="number" 
+                                    id={`mobile-${row.id}`}
+                                    class="w-full bg-transparent border border-slate-600 rounded px-2 py-1 text-slate-900 focus:border-emerald-400 focus:outline-none text-right"
+                                    value="0"
+                                />
+                            ) : (
+                                <div id={`mobile-${row.id}`} class={`${row.class} text-right`}>0.00</div>
+                            )}
+                        </td>
+                    </tr>
+                ))}
+                <tr class="bg-slate-800">
+                    <td class="px-4 py-3 text-slate-900 font-bold text-white">FLUJO DE EFECTIVO NETO</td>
+                    <td id="mobile-netFlow" class="px-4 py-3 text-emerald-600 font-bold text-right">0.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mt-8">
+        <div class="bg-slate-800/50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold text-slate-900 mb-3">Indicadores Financieros</h3>
+            <div class="space-y-2">
+                <div class="flex justify-between">
+                    <span class="text-slate-900">TIR:</span>
+                    <span id="tir" class="text-emerald-600 font-medium">0.00%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-900">VAN:</span>
+                    <span id="van" class="text-emerald-600 font-medium">0.00</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-900">TMAR:</span>
+                    <span id="tmar" class="text-emerald-600 font-medium">0.00%</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-slate-800/50 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold text-slate-900 mb-3">Datos del Proyecto</h3>
+            <div class="space-y-2">
+                <div class="flex items-center">
+                    <label class="text-slate-900 w-1/2">Tasa de Descuento:</label>
+                    <input 
+                        type="number" 
+                        id="discountRate"
+                        class="flex-1 bg-transparent border border-slate-600 rounded px-2 py-1 text-slate-900 focus:border-emerald-400 focus:outline-none" 
+                        value="10" 
+                    />
+                    <span class="text-slate-900 ml-2">%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    import { initializeFinancialCalculator } from '../../scripts/financial/calculatorLogic.js';
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeFinancialCalculator();
+        
+        // Manejar cambio de año en móvil
+        const yearSelector = document.getElementById('yearSelectorMobile');
+        if (yearSelector) {
+            yearSelector.addEventListener('change', (e) => {
+                updateMobileView(parseInt(e.target.value));
+            });
+        }
+    });
+
+    function updateMobileView(selectedYear) {
+        rows.forEach(row => {
+            const mobileElement = document.getElementById(`mobile-${row.id}`);
+            const desktopElement = document.getElementById(`${row.id}-${selectedYear}`);
+            
+            if (mobileElement && desktopElement) {
+                if (row.type === 'input') {
+                    mobileElement.value = desktopElement.value;
+                } else {
+                    mobileElement.textContent = desktopElement.textContent;
+                }
+            }
+        });
+
+        const mobileNetFlow = document.getElementById('mobile-netFlow');
+        const desktopNetFlow = document.getElementById(`netFlow-${selectedYear}`);
+        if (mobileNetFlow && desktopNetFlow) {
+            mobileNetFlow.textContent = desktopNetFlow.textContent;
+        }
+    }
+</script> 
