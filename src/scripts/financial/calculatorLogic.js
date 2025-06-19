@@ -69,8 +69,18 @@ function recalcularTodo() {
         const prestamo = obtenerValorNumerico(`loan-${anio}`);
         const amortizacion = obtenerValorNumerico(`amortization-${anio}`);
 
-        const flujoNeto = utilidadNeta + depreciacionAF - invActivosFijos + valorResidual 
-                       - kwUtilizado + recuperacionKW + prestamo - amortizacion;
+        const capitalTrabajo = obtenerValorNumerico(`workingCapital-${anio}`);
+        let flujoNeto = utilidadNeta + depreciacionAF - invActivosFijos + valorResidual 
+            - kwUtilizado + recuperacionKW + prestamo - amortizacion;
+
+        // Restar capital de trabajo solo en año 0
+        if (anio === 0) {
+            flujoNeto -= capitalTrabajo;
+        }
+        // Sumar recuperación de capital de trabajo solo en año 5
+        if (anio === 5) {
+            flujoNeto += capitalTrabajo;
+        }
         valores[`netFlow-${anio}`] = flujoNeto;
     });
 
