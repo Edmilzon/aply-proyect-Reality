@@ -13,28 +13,39 @@ export function inicializarCalculadoraFinanciera() {
         input.addEventListener('blur', formatearNumero);
     });
 
+    // Añadir listener al selector de año móvil si existe
+    const yearSelectorMobile = document.getElementById('yearSelectorMobile');
+    if (yearSelectorMobile) {
+        yearSelectorMobile.addEventListener('change', recalcularTodo);
+    }
+
     // Inicializar cálculos
     recalcularTodo();
 }
 
 function manejarInput(evento) {
+    console.log('Input cambiado:', evento.target.id, evento.target.value);
     const esMovil = evento.target.id.startsWith('mobile-');
-    const anioSeleccionado = esMovil ? 
-        parseInt(document.getElementById('yearSelectorMobile').value) : 
-        parseInt(evento.target.id.split('-')[1]);
+    let anioSeleccionado;
 
     if (esMovil) {
-        // Sincronizar valor con la vista de escritorio
-        const idEscritorio = evento.target.id.replace('mobile-', '') + `-${anioSeleccionado}`;
-        const inputEscritorio = document.getElementById(idEscritorio);
+        anioSeleccionado = parseInt(document.getElementById('yearSelectorMobile').value);
+    } else {
+        anioSeleccionado = parseInt(evento.target.id.split('-')[1]);
+    }
+
+    if (esMovil) {
+  
+        const idEscritorioBase = evento.target.id.replace('mobile-', ''); 
+        const inputEscritorio = document.getElementById(`${idEscritorioBase}-${anioSeleccionado}`);
         if (inputEscritorio) {
             inputEscritorio.value = evento.target.value;
         }
     } else {
-        // Sincronizar valor con la vista móvil si corresponde al año seleccionado
         const anioMovilActual = parseInt(document.getElementById('yearSelectorMobile').value);
         if (anioSeleccionado === anioMovilActual) {
-            const idMovil = 'mobile-' + evento.target.id.split('-')[0];
+            // El ID móvil no incluye el año, e.g., 'mobile-quantity'
+            const idMovil = 'mobile-' + evento.target.id.split('-')[0]; 
             const inputMovil = document.getElementById(idMovil);
             if (inputMovil) {
                 inputMovil.value = evento.target.value;
@@ -46,65 +57,66 @@ function manejarInput(evento) {
 }
 
 function recalcularTodo() {
+    console.log('Recalculando...');
     const anios = [0, 1, 2, 3, 4, 5];
     const valores = {};
 
     anios.forEach(anio => {
-        // Obtener valores base
         const cantidad = obtenerValorNumerico(`quantity-${anio}`);
         const precio = obtenerValorNumerico(`price-${anio}`);
 
-        // Calcular ingresos
         const ingresoOperativo = cantidad * precio;
         valores[`operatingIncome-${anio}`] = ingresoOperativo;
 
-        // Calcular impuestos
         const iva = ingresoOperativo * TASA_IVA;
         const it = ingresoOperativo * TASA_IT;
         valores[`iva-${anio}`] = iva;
         valores[`it-${anio}`] = it;
 
-        // Calcular ingreso neto
         const ingresoNeto = ingresoOperativo - iva - it;
         valores[`netIncome-${anio}`] = ingresoNeto;
 
-        // Obtener costos
-        const costosVariables = obtenerValorNumerico(`variableCosts-${anio}`);
+        const unitVariableCost = obtenerValorNumerico(`unitVariableCost-${anio}`); // NUEVO ID
+        // Calcular Costos Variables Totales
+        const costosVariables = cantidad * unitVariableCost; // Cálculo basado en input de Cantidad y Costo Unitario
+        valores[`variableCosts-${anio}`] = costosVariables; // Asignar al ID del campo calculado
+        
         const costosFijos = obtenerValorNumerico(`fixedCosts-${anio}`);
         const costosFinancieros = obtenerValorNumerico(`financialCosts-${anio}`);
-        const depreciacion = obtenerValorNumerico(`depreciation-${anio}`);
+        const depreciacion = obtenerValorNumerico(`depreciation-${anio}`); // Este es el input de Depreciación
 
-        // Calcular utilidad bruta
         const utilidadBruta = ingresoNeto - costosVariables - costosFijos - costosFinancieros - depreciacion;
         valores[`grossProfit-${anio}`] = utilidadBruta;
 
-        // Calcular IUE
-        const iue = utilidadBruta * TASA_IUE;
+        const iue = Math.max(0, utilidadBruta) * TASA_IUE;
         valores[`iue-${anio}`] = iue;
 
-        // Calcular utilidad neta
+        // Utilidad Neta = Utilidad Bruta - IUE
         const utilidadNeta = utilidadBruta - iue;
         valores[`netProfit-${anio}`] = utilidadNeta;
 
-        // Obtener valores de inversión y capital
-        const activosFijos = obtenerValorNumerico(`fixedAssets-${anio}`);
-        const depreciacionActivos = obtenerValorNumerico(`assetDepreciation-${anio}`);
-        const valorResidual = obtenerValorNumerico(`residualValue-${anio}`);
-        const capitalTrabajo = obtenerValorNumerico(`workingCapital-${anio}`);
-        const recuperacionCapital = obtenerValorNumerico(`capitalRecovery-${anio}`);
-        const prestamo = obtenerValorNumerico(`loan-${anio}`);
-        const amortizacion = obtenerValorNumerico(`amortization-${anio}`);
+        const invActivosFijos = obtenerValorNumerico(`fixedAssets-${anio}`); // (-)Inv. Activos Fijos
 
-        // Calcular flujo neto
-        const flujoNeto = utilidadNeta - activosFijos + depreciacionActivos + valorResidual 
-                       - capitalTrabajo + recuperacionCapital + prestamo - amortizacion;
+        const depreciacionAF = depreciacion; // AHORA TOMA EL VALOR DEL INPUT 'depreciacion'
+        valores[`assetDepreciation-${anio}`] = depreciacionAF; // Asignar este valor al campo 'calculated'
+        
+        const valorResidual = obtenerValorNumerico(`residualValue-${anio}`); // (+)Valor Residual
+        
+        const kwUtilizado = obtenerValorNumerico(`workingCapitalUtilized-${anio}`); // NUEVO ID para "(-) Kw utilizado"
+        const recuperacionKW = obtenerValorNumerico(`capitalRecovery-${anio}`); // (+)Recuperacion de KW
+        const prestamo = obtenerValorNumerico(`loan-${anio}`); // (+)Préstamo
+        const amortizacion = obtenerValorNumerico(`amortization-${anio}`); // (-)Amortizac. Finan.
+
+        // Flujo de Efectivo Neto
+        const flujoNeto = utilidadNeta + depreciacionAF - invActivosFijos + valorResidual 
+                       - kwUtilizado + recuperacionKW + prestamo - amortizacion;
         valores[`netFlow-${anio}`] = flujoNeto;
     });
 
     // Actualizar valores en la tabla
     actualizarValoresTabla(valores);
 
-    // Calcular indicadores financieros
+    // Calcular indicadores financieros (TIR y VAN)
     calcularIndicadoresFinancieros(valores);
 
     // Actualizar vista móvil
@@ -113,19 +125,29 @@ function recalcularTodo() {
 
 function obtenerValorNumerico(id) {
     const elemento = document.getElementById(id);
-    const elementoMovil = document.getElementById(`mobile-${id.split('-')[0]}`);
+
+    if (elemento && elemento.tagName === 'INPUT') { // Asegura que solo se intente leer .value de inputs
+        const valorLimpio = elemento.value.replace(/[, ]/g, '');
+        return parseFloat(valorLimpio) || 0;
+    } 
     
-    if (elemento) {
-        return parseFloat(elemento.value) || 0;
-    } else if (elementoMovil) {
-        return parseFloat(elementoMovil.value) || 0;
+    const idBase = id.includes('-') ? id.split('-')[0] : id; // Extrae 'quantity' de 'quantity-0'
+    const elementoMovil = document.getElementById(`mobile-${idBase}`);
+    if (elementoMovil && elementoMovil.tagName === 'INPUT') {
+        const valorLimpio = elementoMovil.value.replace(/[, ]/g, '');
+        return parseFloat(valorLimpio) || 0;
     }
+
     return 0;
 }
 
 function formatearNumero(evento) {
     const valor = parseFloat(evento.target.value) || 0;
-    evento.target.value = valor.toFixed(2);
+    // Formatea a 2 decimales y añade separadores de miles
+    evento.target.value = new Intl.NumberFormat('es-BO', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(valor);
 }
 
 function actualizarValoresTabla(valores) {
@@ -141,18 +163,17 @@ function actualizarValoresTabla(valores) {
 function actualizarValoresMovil(valores) {
     const anioSeleccionado = parseInt(document.getElementById('yearSelectorMobile').value);
     
-    // Actualizar valores calculados en la vista móvil
     Object.entries(valores).forEach(([clave, valor]) => {
         const [idBase, anio] = clave.split('-');
         if (parseInt(anio) === anioSeleccionado) {
             const elementoMovil = document.getElementById(`mobile-${idBase}`);
-            if (elementoMovil) {
+            // Solo actualiza textContent si es un DIV (elemento calculado)
+            if (elementoMovil && elementoMovil.tagName !== 'INPUT') { 
                 elementoMovil.textContent = formatearMoneda(valor);
             }
         }
     });
 
-    // Actualizar flujo neto móvil
     const flujoNetoMovil = document.getElementById('mobile-netFlow');
     if (flujoNetoMovil) {
         flujoNetoMovil.textContent = formatearMoneda(valores[`netFlow-${anioSeleccionado}`]);
@@ -160,7 +181,8 @@ function actualizarValoresMovil(valores) {
 }
 
 function formatearMoneda(valor) {
-    return new Intl.NumberFormat('es-BO', {
+    return new Intl.NumberFormat('es-BO', { // Asumiendo formato de Bolivia por el idioma 'es-BO'
+        style: 'decimal', // Usar decimal para números generales, no currency
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(valor);
@@ -168,39 +190,84 @@ function formatearMoneda(valor) {
 
 function calcularIndicadoresFinancieros(valores) {
     // Obtener flujos para cálculos
-    const flujos = Object.entries(valores)
-        .filter(([clave]) => clave.startsWith('netFlow-'))
-        .map(([, valor]) => valor);
+    const flujos = [];
+    for (let i = 0; i <= 5; i++) {
+        flujos.push(valores[`netFlow-${i}`] || 0); // Asegurarse de que existan los valores
+    }
 
     // Calcular TIR
     const tir = calcularTIR(flujos);
-    
-    // Obtener tasa de descuento
-    const tasaDescuento = obtenerValorNumerico('discountRate') / 100;
+
+    const tmar = obtenerValorNumerico('tmarInput') / 100; // Obtener del input 'tmarInput' y dividir por 100
     
     // Calcular VAN
-    const van = calcularVAN(flujos, tasaDescuento);
-    
-    // Actualizar indicadores en la UI
+    const van = calcularVAN(flujos, tmar);
+
     actualizarIndicadoresFinancieros(tir, van);
 }
 
 function calcularTIR(flujos) {
-    // Implementar cálculo de TIR
-    // Esta es una implementación simplificada
-    return 0;
+    const MAX_ITERATIONS = 1000;
+    const PRECISION = 0.0001;
+    let lowRate = -1; // Un valor bajo para empezar la búsqueda
+    let highRate = 1; // Un valor alto para empezar la búsqueda
+    let irr = 0;
+
+    let vanLow = calculateNPV(flujos, lowRate);
+    let vanHigh = calculateNPV(flujos, highRate);
+
+    if (vanLow * vanHigh > 0) {
+        return NaN; 
+    }
+
+    for (let i = 0; i < MAX_ITERATIONS; i++) {
+        irr = (lowRate + highRate) / 2;
+        const npv = calculateNPV(flujos, irr);
+
+        if (Math.abs(npv) < PRECISION) {
+            return irr;
+        }
+
+        if (npv > 0) {
+            lowRate = irr;
+        } else {
+            highRate = irr;
+        }
+    }
+    return irr; // Retorna la mejor aproximación después de las iteraciones
+}
+
+function calculateNPV(flujos, tasa) {
+    let npv = 0;
+    for (let i = 0; i < flujos.length; i++) {
+        npv += flujos[i] / Math.pow(1 + tasa, i);
+    }
+    return npv;
 }
 
 function calcularVAN(flujos, tasa) {
-    return flujos.reduce((van, flujo, indice) => {
-        return van + flujo / Math.pow(1 + tasa, indice);
+    // El primer flujo (Año 0) no se descuenta
+    return flujos.reduce((vanAcumulado, flujo, indice) => {
+        return vanAcumulado + flujo / Math.pow(1 + tasa, indice);
     }, 0);
 }
 
 function actualizarIndicadoresFinancieros(tir, van) {
     const elementoTIR = document.getElementById('tir');
     const elementoVAN = document.getElementById('van');
+    const elementoTMAR = document.getElementById('tmar'); // Obtiene el span donde se muestra la TMAR
     
-    if (elementoTIR) elementoTIR.textContent = `${(tir * 100).toFixed(2)}%`;
+    if (elementoTIR) {
+        if (isNaN(tir)) {
+            elementoTIR.textContent = 'N/A'; // O un mensaje de error si no se pudo calcular
+        } else {
+            elementoTIR.textContent = `${(tir * 100).toFixed(2)}%`;
+        }
+    }
     if (elementoVAN) elementoVAN.textContent = formatearMoneda(van);
-} 
+    
+    if (elementoTMAR) {
+        const tmarValor = obtenerValorNumerico('tmarInput'); // Obtiene el valor del input de TMAR
+        elementoTMAR.textContent = `${tmarValor.toFixed(2)}%`; // Muestra el valor del input
+    }
+}
