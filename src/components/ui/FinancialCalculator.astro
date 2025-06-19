@@ -8,41 +8,31 @@ const rows = [
     { id: 'iva', label: '(-) IVA (13%)', type: 'calculated', class: 'text-red-600' },
     { id: 'it', label: '(-) IT (3%)', type: 'calculated', class: 'text-red-600' },
     { id: 'netIncome', label: 'INGRESO NETO', type: 'calculated', class: 'text-emerald-600 font-medium bg-slate-800/30' },
-    { id: 'unitVariableCost', label: 'Costo Variable Unitario', type: 'input', class: 'text-slate-900' }, // Nuevo ID para el input
-    { id: 'variableCosts', label: '(-) Costos variables', type: 'calculated', class: 'text-red-600' }, // Ahora es calculado
+    { id: 'unitVariableCost', label: 'Costo Variable Unitario', type: 'input', class: 'text-slate-900' },
+    { id: 'variableCosts', label: '(-) Costos variables', type: 'calculated', class: 'text-red-600' },
     { id: 'fixedCosts', label: '(-) Costos fijos', type: 'input', class: 'text-red-600' },
     { id: 'financialCosts', label: '(-) C.T. Financiero', type: 'input', class: 'text-red-600' },
-    { id: 'depreciation', label: '(-) Depreciación', type: 'input', class: 'text-red-600' }, // Input para la depreciación base
+    { id: 'depreciation', label: '(-) Depreciación', type: 'input', class: 'text-red-600' },
     { id: 'grossProfit', label: 'UTILIDAD BRUTA', type: 'calculated', class: 'text-emerald-600 font-medium bg-slate-800/30' },
     { id: 'iue', label: '(-) IUE (25%)', type: 'calculated', class: 'text-red-600' },
     { id: 'netProfit', label: 'UTILIDAD NETA', type: 'calculated', class: 'text-emerald-600 font-medium bg-slate-800/30' },
     { id: 'fixedAssets', label: '(-)Inv. Activos Fijos', type: 'input', class: 'text-red-600' },
-    { id: 'assetDepreciation', label: '(+) Depreciación A.F', type: 'calculated', class: 'text-emerald-600' },   
+    { id: 'assetDepreciation', label: '(+) Depreciación A.F', type: 'calculated', class: 'text-emerald-600' },
     { id: 'residualValue', label: '(+) Valor Residual', type: 'input', class: 'text-emerald-600' },
-    { id: 'workingCapitalUtilized', label: '(-) Kw utilizado', type: 'input', class: 'text-red-600' }, // Nuevo ID para el input
+    { id: 'workingCapital', label: 'Capital de Trabajo (kw)', type: 'input', class: 'text-slate-900' },
+    { id: 'workingCapitalUtilized', label: '(-) Kw utilizado', type: 'input', class: 'text-red-600' },
     { id: 'capitalRecovery', label: '(+) Recuperacion de Kw', type: 'input', class: 'text-emerald-600' },
     { id: 'loan', label: '(+) Prestamo', type: 'input', class: 'text-emerald-600' },
-    { id: 'amortization', label: '(-) Amortizac. Finan.', type: 'input', class: 'text-red-600' } // Corregido 'Finc.' a 'Finan.'
+    { id: 'amortization', label: '(-) Amortizac. Finan.', type: 'input', class: 'text-red-600' }
 ];
 ---
 
 <div class="w-full overflow-x-auto bg-white/10 backdrop-blur-md rounded-xl shadow-xl border border-slate-700/50 p-6">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-emerald-600">Flujo de Efectivo Proyectado</h2>
-        
-        <div class="md:hidden flex items-center gap-4">
-            <select 
-                id="yearSelectorMobile" 
-                class="bg-slate-800 text-slate-900 px-4 py-2 rounded-lg border border-slate-600 focus:border-emerald-400 focus:outline-none"
-            >
-                {years.map(year => (
-                    <option value={year}>Año {year}</option>
-                ))}
-            </select>
-        </div>
     </div>
 
-    <div class="hidden md:block overflow-x-auto">
+    <div class="overflow-x-auto">
         <table class="w-full min-w-[1200px] table-fixed">
             <thead class="bg-slate-800 text-slate-900 text-white">
                 <tr>
@@ -53,7 +43,6 @@ const rows = [
                 </tr>
             </thead>
             <tbody>
-                {/* ESTO SE GENERARÁ DINÁMICAMENTE CON LOS CAMBIOS EN EL ARRAY 'rows' */}
                 {rows.map(row => (
                     <tr class="border-b border-slate-700/50">
                         <td class={`px-4 py-3 font-medium ${row.class}`}>{row.label}</td>
@@ -84,41 +73,6 @@ const rows = [
                     ))}
                 </tr>
             </tfoot>
-        </table>
-    </div>
-
-    <div class="md:hidden">
-        <table class="w-full">
-            <thead class="bg-slate-800 text-slate-900">
-                <tr>
-                    <th class="px-4 py-3 text-left">ITEM</th>
-                    <th class="px-4 py-3 text-right">Valor</th>
-                </tr>
-            </thead>
-            <tbody id="mobileTableBody">
-                {/* ESTO TAMBIÉN SE GENERARÁ DINÁMICAMENTE CON LOS CAMBIOS EN EL ARRAY 'rows' */}
-                {rows.map(row => (
-                    <tr class="border-b border-slate-700/50">
-                        <td class={`px-4 py-3 font-medium ${row.class}`}>{row.label}</td>
-                        <td class="px-4 py-2">
-                            {row.type === 'input' ? (
-                                <input 
-                                    type="number" 
-                                    id={`mobile-${row.id}`}
-                                    class="w-full bg-transparent border border-slate-600 rounded px-2 py-1 text-slate-900 focus:border-emerald-400 focus:outline-none text-right"
-                                    defaultValue="0"
-                                />
-                            ) : (
-                                <div id={`mobile-${row.id}`} class={`${row.class} text-right`}>0.00</div>
-                            )}
-                        </td>
-                    </tr>
-                ))}
-                <tr class="bg-slate-800">
-                    <td class="px-4 py-3 text-slate-900 font-bold text-emerald-600">FLUJO DE EFECTIVO NETO</td>
-                    <td id="mobile-netFlow" class="px-4 py-3 text-emerald-600 font-bold text-right">0.00</td>
-                </tr>
-            </tbody>
         </table>
     </div>
 
@@ -159,39 +113,4 @@ const rows = [
     </div>
 </div>
 
-<script>
-    const rows = JSON.parse(`${JSON.stringify(rows)}`);
-    import { inicializarCalculadoraFinanciera } from '../../scripts/financial/calculatorLogic.js';
-    document.addEventListener('DOMContentLoaded', () => {
-        inicializarCalculadoraFinanciera();
-        
-        // Manejar cambio de año en móvil
-        const selectorAnio = document.getElementById('yearSelectorMobile');
-        if (selectorAnio) {
-            selectorAnio.addEventListener('change', (e) => {
-                actualizarVistaMovil(parseInt(e.target.value));
-            });
-        }
-    });
-
-    function actualizarVistaMovil(anioSeleccionado) {
-        rows.forEach(fila => {
-            const elementoMovil = document.getElementById(`mobile-${fila.id}`);
-            const elementoEscritorio = document.getElementById(`${fila.id}-${anioSeleccionado}`);
-            
-            if (elementoMovil && elementoEscritorio) {
-                if (fila.type === 'input') {
-                    elementoMovil.value = elementoEscritorio.value;
-                } else {
-                    elementoMovil.textContent = elementoEscritorio.textContent;
-                }
-            }
-        });
-
-        const flujoNetoMovil = document.getElementById('mobile-netFlow');
-        const flujoNetoEscritorio = document.getElementById(`netFlow-${anioSeleccionado}`);
-        if (flujoNetoMovil && flujoNetoEscritorio) {
-            flujoNetoMovil.textContent = flujoNetoEscritorio.textContent;
-        }
-    }
-</script>
+<script type="module" src="/src/scripts/financial/calculatorLogic.js"></script>
