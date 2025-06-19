@@ -54,6 +54,7 @@ const rows = [
                                         id={`${row.id}-${year}`}
                                         class="w-full bg-transparent border border-slate-600 rounded px-2 py-1 text-slate-900 focus:border-emerald-400 focus:outline-none text-right"
                                         defaultValue="0"
+                                        min="0"
                                     />
                                 ) : row.type === 'calculated' ? (
                                     <div id={`${row.id}-${year}`} class={`${row.class} text-right`}>0.00</div>
